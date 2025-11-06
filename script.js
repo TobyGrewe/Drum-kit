@@ -19,6 +19,23 @@ masterGain.connect(analyser);
 const bufferLength = analyser.frequencyBinCount;
 const dataArray = new Uint8Array(bufferLength);
 
+
+
+
+// Setup for recording
+const dest = audioContext.createMediaStreamDestination();
+masterGain.connect(dest);
+
+let mediaRecorder;
+let recordedChunks = [];
+let recordedAudio = null;
+
+
+
+
+
+
+
 //Drum sound generators
 const sounds = {
     kick: () => {
@@ -390,3 +407,61 @@ function drawVisualizer() {
 }
 
 drawVisualizer();
+
+
+
+
+
+// Recording Function
+
+const recordBtn = document.getElementById('record-btn');
+const stopBtn = document.getElementById('stop-btn');
+const playBtn = document.getElementById('play-btn');
+const downloadBtn = document.getElementById('download-btn');
+const recordingStatus = document.getElementById('recording-status');
+
+recordBtn.addEventListener('click', () => {
+    recordedChunks = [];
+    mediaRecorder = new MediaRecorder(dest.stream);
+
+    mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0 ){
+            recordedChunks.push(e.data);
+        }
+    };
+
+    mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'audio/webm'});
+        recordedAudio = URL.createObjectURL(blob);
+        playBtn.disabled = false;
+        downloadBtn.disabled = false;
+        recordingStatus.textContent = '✓ Recording saved!';
+    };
+
+    mediaRecorder.start();
+    recordBtn.disabled = true;
+    stopBtn.disabled = false;
+    playBtn.disabled = true;
+    downloadBtn.disabled = true;
+    recordingStatus.textContent ='🔴 Recording...';
+   
+});
+    
+    stopBtn.addEventListener('click', () => {
+        mediaRecorder.stop();
+        recordBtn.disabled = false;
+        stopBtn.disabled = true;
+        recordingStatus.textContent = 'Processing...';
+    });
+
+    playBtn.addEventListener('click', () => {
+        const audio = new Audio(recordedAudio);
+        audio.play();
+    });
+
+    downloadBtn.addEventListener('click', () => {
+        const a = document.createElement('a');
+        a.href = recordedAudio;
+        a.download = 'drum-recording.webm';
+        a.click();
+    });

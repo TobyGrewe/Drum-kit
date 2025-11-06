@@ -22,10 +22,24 @@
             <input type="range" id="volume" min="0" max="100" value="70">
             <span id="volume-value">70%</span>
             
+
+            <!--  RECORDING CONTROLS -->
+            <div class="recording-controls">
+                <button id="record-btn">🔴 Record</button>
+                <button id="stop-btn" disabled>⏹️ Stop</button>
+                <button id="play-btn" disabled>▶️ Play</button>
+                <button id="download-btn" disabled>⬇️ Download</button>
+                <span id="recordin-status"></span>
+
+
+
+            </div>
             
             <!-- ?Dark mode toogle -->
              <button id="theme-toggle">🌒Dark Mode</button>
         </div>
+
+
         <div class="drum-pads">
             <div class="pad" data-key="a" data-sound="kick">
                 <kbd>A</kbd>
