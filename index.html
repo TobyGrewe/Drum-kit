@@ -9,6 +9,12 @@
 <body>
     <div class="container">
         <h1>Drum Machine</h1>
+        
+        <div class="controls">
+            <label for="volume">Master Volume</label>
+            <input type="range" id="volume" min="0" max="100" value="70">
+            <span id="volume-value">70%</span>
+        </div>
         <div class="drum-pads">
             <div class="pad" data-key="a" data-sound="kick">
                 <kbd>A</kbd>
@@ -25,6 +31,26 @@
             <div class="pad" data-key="f" data-sound="openhat">
                 <kbd>F</kbd>
                 <span>Open Hat</span>
+            </div>
+            <div class="pad" data-key="g" data-sound="rimshot">
+                <kbd>G</kbd>
+                <span>Rimshot</span>
+            </div>
+            <div class="pad" data-key="h" data-sound="tom">
+                <kbd>H</kbd>
+                <span>Tom</span>
+            </div>
+            <div class="pad" data-key="j" data-sound="clap">
+                <kbd>J</kbd>
+                <span>Clap</span>
+            </div>
+            <div class="pad" data-key="k" data-sound="crash">
+                <kbd>K</kbd>
+                <span>Crash</span>
+            </div>
+            <div class="pad" data-key="l" data-sound="cowbell">
+                <kbd>L</kbd>
+                <span>Cowbell</span>
             </div>
         </div>
     </div>

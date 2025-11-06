@@ -1,6 +1,13 @@
 //Create audio context
 const audioContext = new (window.AudioContext || window.webkitAudioContext)()
 
+
+
+// Create Master volume control
+const masterGain = audioContext.createGain();
+masterGain.connect(audioContext.destination);
+masterGain.gain.value = 0.7; //Volume default at 70%
+
 //Drum sound generators
 const sounds = {
     kick: () => {
@@ -9,7 +16,7 @@ const sounds = {
 
 
         osc.connect(gain);
-        gain.connect(audioContext.destination);
+        gain.connect(masterGain);
 
         osc.frequency.setValueAtTime(150, audioContext.currentTime);
         
@@ -50,7 +57,7 @@ snare: () => {
     
     noise.connect(noiseFilter);
     noiseFilter.connect(noiseGain);
-    noiseGain.connect(audioContext.destination);
+    noiseGain.connect(masterGain);
 
     noise.start(audioContext.currentTime);
     noise.stop(audioContext.currentTime + 0.2);
@@ -88,7 +95,7 @@ hihat: () => {
 
     noise.connect(bandpass);
     bandpass.connect(gain);
-    gain.connect(audioContext.destination);
+    gain.connect(masterGain);
 
 
     noise.start(audioContext.currentTime);
@@ -96,7 +103,9 @@ hihat: () => {
 
 },
 
-openhat: () => {
+
+
+    openhat: () => {
     const noise = audioContext.createBufferSource();
     const noiseBuffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.3, audioContext.sampleRate);
 
@@ -119,11 +128,134 @@ openhat: () => {
 
     noise.connect(bandpass);
     bandpass.connect(gain);
-    gain.connect(audioContext.destination);
+    gain.connect(masterGain);
 
     noise.start(audioContext.currentTime);
     noise.stop(audioContext.currentTime + 0.3);
+    },
 
+    rimshot: () => {
+        const osc1 = audioContext.createOscillator();
+        const osc2 = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        osc1.type = 'square';
+        osc2.type = 'square';
+        
+        osc1.frequency.setValueAtTime(180, audioContext.currentTime);
+        osc2.frequency.setValueAtTime(320, audioContext.currentTime);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(masterGain);
+
+        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+        osc1.start(audioContext.currentTime);
+        osc2.start(audioContext.currentTime);
+        osc1.stop(audioContext.currentTime + 0.1);
+        osc2.stop(audioContext.currentTime + 0.1);
+    },
+
+    tom: () => {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        osc.connect(gain);
+        gain.connect(masterGain);
+
+        osc.frequency.setValueAtTime(220, audioContext.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(50, audioContext.currentTime + 0.15);
+
+        gain.gain.setValueAtTime(0.8, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+
+        osc.start(audioContext.currentTime);
+        osc.stop(audioContext.currentTime + 0.15);
+    },
+
+    clap: () => {
+        const noise1 = audioContext.createBufferSource();
+        const noise2 = audioContext.createBufferSource();
+        const noise3 = audioContext.createBufferSource();
+        
+        const noiseBuffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.05, audioContext.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        
+        for (let i = 0; i < noiseBuffer.length; i++) {
+            output[i] = Math.random() * 2 - 1;
+        }
+
+        noise1.buffer = noiseBuffer;
+        noise2.buffer = noiseBuffer;
+        noise3.buffer = noiseBuffer;
+
+        const filter = audioContext.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 1500;
+
+        const gain = audioContext.createGain();
+        gain.gain.setValueAtTime(0.6, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+
+        noise1.connect(filter);
+        noise2.connect(filter);
+        noise3.connect(filter);
+        filter.connect(gain);
+        gain.connect(masterGain);
+
+        noise1.start(audioContext.currentTime);
+        noise2.start(audioContext.currentTime + 0.03);
+        noise3.start(audioContext.currentTime + 0.05);
+    },
+
+    crash: () => {
+        const noise = audioContext.createBufferSource();
+        const noiseBuffer = audioContext.createBuffer(1, audioContext.sampleRate * 1.5, audioContext.sampleRate);
+        
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < noiseBuffer.length; i++) {
+            output[i] = Math.random() * 2 - 1;
+        }
+
+        noise.buffer = noiseBuffer;
+
+        const highpass = audioContext.createBiquadFilter();
+        highpass.type = 'highpass';
+        highpass.frequency.value = 5000;
+
+        const gain = audioContext.createGain();
+        gain.gain.setValueAtTime(0.5, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
+
+        noise.connect(highpass);
+        highpass.connect(gain);
+        gain.connect(masterGain);
+
+        noise.start(audioContext.currentTime);
+        noise.stop(audioContext.currentTime + 1.5);
+    },
+
+    cowbell: () => {
+        const osc1 = audioContext.createOscillator();
+        const osc2 = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        osc1.frequency.setValueAtTime(800, audioContext.currentTime);
+        osc2.frequency.setValueAtTime(540, audioContext.currentTime);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(masterGain);
+
+        gain.gain.setValueAtTime(0.5, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+        osc1.start(audioContext.currentTime);
+        osc2.start(audioContext.currentTime);
+        osc1.stop(audioContext.currentTime + 0.3);
+        osc2.stop(audioContext.currentTime + 0.3);
     }
 
 };
@@ -168,4 +300,15 @@ document.querySelectorAll('.pad').forEach(pad => {
         setTimeout(() => pad.classList.remove('active'), 100);
         
     });
+});
+
+
+// Master volume control
+const volumeSlider = document.getElementById('volume');
+const volumeValue = document.getElementById('volume-value');
+
+volumeSlider.addEventListener('input', (e) =>{
+    const volume = e.target.value / 100;
+    masterGain.gain.value = volume;
+    volumeValue.textContent = e.target.value + '%';
 });
