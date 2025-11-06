@@ -12,6 +12,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: background 0.3s ease;
 }
 
 .container{
@@ -60,3 +61,57 @@ h1 {
     color:#666;
     font-size: 1rem;
 }
+
+
+/* Dark Mode Colors */
+body.dark-mode {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    
+
+
+}
+
+body.dark-mode .container {
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode h1 {
+    color: #fff;
+
+
+}
+
+
+body.dark-mode .pad{
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+
+}
+
+body.dark-mode .pad:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+body.dark-mode .pad.active {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+body.dark-mode .controls {
+    color: #fff;
+
+}
+
+body.dark-mode #theme-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode #theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
