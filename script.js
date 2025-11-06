@@ -8,6 +8,17 @@ const masterGain = audioContext.createGain();
 masterGain.connect(audioContext.destination);
 masterGain.gain.value = 0.7; //Volume default at 70%
 
+
+
+
+// Create analyser for visualizer
+const analyser = audioContext.createAnalyser();
+analyser.fftSize = 256;
+masterGain.connect(analyser);
+
+const bufferLength = analyser.frequencyBinCount;
+const dataArray = new Uint8Array(bufferLength);
+
 //Drum sound generators
 const sounds = {
     kick: () => {
@@ -338,3 +349,44 @@ themeToggle.addEventListener('click', () => {
         localStorage.setItem('theme', 'light');
     }
 });
+
+
+
+
+
+
+// Audio Visualizer
+const canvas = document.getElementById('visualizer');
+const ctx = canvas.getContext('2d');
+
+canvas.width = 800;
+canvas.height = 150;
+
+function drawVisualizer() {
+    requestAnimationFrame(drawVisualizer);
+
+    analyser.getByteFrequencyData(dataArray);
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const barWidth = (canvas.width / bufferLength) * 2.5;
+    let barHeight;
+    let x = 0;
+
+    for (let i = 0; i < bufferLength; i++) {
+        barHeight = dataArray[i] / 2;
+
+
+        const r = barHeight + 25;
+        const g = 250 - barHeight;
+        const b = 50;
+
+        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+
+        x += barWidth + 1;
+    }
+}
+
+drawVisualizer();
